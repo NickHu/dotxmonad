@@ -20,6 +20,9 @@ import System.Taffybar.XMonadLog
 
 import qualified XMonad.StackSet as W
 import qualified Data.Map as M
+
+-- Solarized colours
+import Solarized
  
 layouts = hintedTile Tall ||| hintedTile Wide ||| Full
   where
@@ -31,11 +34,11 @@ layouts = hintedTile Tall ||| hintedTile Wide ||| Full
 customXPConfig = defaultXPConfig                                    
   {
       font  = "-*-terminus-*-*-*-*-12-*-*-*-*-*-*-u" 
-    , fgColor = "#00CCFF"
-    , bgColor = "#000000"
+    , fgColor = solarizedBlue
+    , bgColor = solarizedBase02
+    , fgHLight    = solarizedOrange
+    , bgHLight    = solarizedBase02
     , promptBorderWidth = 0
-    , bgHLight    = "#000000"
-    , fgHLight    = "#0000FF"
     , position = Top
     , height   = 16
   }
@@ -53,21 +56,22 @@ main = do
   bar <- spawn "taffybar"
   client <- connectSession
   let pp = taffybarPP {
-    ppCurrent = taffybarColor "orange" ""
-  , ppVisible = taffybarColor "green" ""
-  , ppHidden = taffybarColor "grey" ""
-  , ppUrgent = taffybarColor "orange" "" . wrap "!" "!"
-  , ppTitle = taffybarColor "cyan" ""
-  , ppLayout = taffybarColor "white" ""
-  , ppSep = " | "
+    ppCurrent = taffybarColor solarizedMagenta ""
+  , ppVisible = taffybarColor solarizedGreen ""
+  , ppHidden = taffybarColor solarizedBase01 ""
+  , ppHiddenNoWindows = taffybarColor solarizedBase00 ""
+  , ppUrgent = taffybarColor solarizedOrange "" . wrap "!" "!"
+  , ppTitle = taffybarColor solarizedBlue ""
+  , ppLayout = taffybarColor solarizedViolet ""
+  , ppSep = " <span foreground='" ++ solarizedCyan ++ "'>|</span> "
     }
   xmonad $ ewmh defaultConfig
     { terminal        = "urxvtc"
     , modMask         = mod4Mask
     , workspaces      = ["sys", "www"]
     , borderWidth     = 1
-    , focusedBorderColor     = "#00CCFF"
-    , normalBorderColor      = "#0000FF"
+    , focusedBorderColor     = solarizedRed
+    , normalBorderColor      = solarizedBase01
 
     , keys            = \c -> keyBindings c `M.union` keys defaultConfig c
 
