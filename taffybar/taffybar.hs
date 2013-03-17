@@ -7,9 +7,11 @@ import System.Taffybar.FreedesktopNotifications
 import System.Taffybar.Weather
 import System.Taffybar.NetMonitor
 
+import Solarized
+
 main = do
-  let weatherCfg = (defaultWeatherConfig "EGBE") { weatherTemplate = "Coventry Airport: $tempC$°C @ $humidity$% $skyCondition$"}
-      clock = textClockNew Nothing "<span fgcolor='cyan'>%a %b %_d %H:%M:%S</span>" 1
+  let weatherCfg = (defaultWeatherConfig "EGBE") { weatherTemplate = "<span fgcolor='" ++ solarizedViolet ++ "'>Coventry Airport</span><span fgcolor='" ++ solarizedBlue ++ "'>:</span> <span fgcolor='" ++ solarizedGreen ++ "'>$tempC$</span><span fgcolor='" ++ solarizedBlue ++ "'>°C</span> <span fgcolor='" ++ solarizedViolet ++ "'>@</span> <span fgcolor='" ++ solarizedMagenta ++ "'>$humidity$</span><span fgcolor='" ++ solarizedBlue ++ "'>%</span> <span fgcolor='" ++ solarizedRed ++ "'>$skyCondition$</span>"}
+      clock = textClockNew Nothing ("<span fgcolor='" ++ solarizedViolet ++ "'>%a</span> <span fgcolor='" ++ solarizedBlue ++ "'>%b</span> <span fgcolor='" ++ solarizedCyan ++ "'>%_d</span> <span fgcolor='" ++ solarizedYellow ++ "'>%H</span><span fgcolor='" ++ solarizedViolet ++ "'>:</span><span fgcolor='" ++ solarizedYellow ++ "'>%M</span><span fgcolor='" ++ solarizedViolet ++ "'>:</span><span fgcolor='" ++ solarizedYellow ++ "'>%S</span>") 1
       log = xmonadLogNew
       tray = systrayNew
       nowPlaying = mpris2New
