@@ -45,13 +45,15 @@ customXPConfig = defaultXPConfig
   , height   = 16
   }
 
-manager = composeAll
+manager = composeOne
   [
-    isFullscreen                       --> (doF W.focusDown <+> doFullFloat)
-  , className =? "Firefox"             --> (liftX (addWorkspace "www") >> doShift "www")
-  , className =? "Gvim"                --> (liftX (addWorkspace "code") >> doShift "code")
-  , className =? "URxvt"               --> (liftX (addWorkspace "sys") >> doShift "sys")
-  , className =? "Deluge"              --> (liftX (addWorkspace "torrent") >> doShift "sys")
+    isFullscreen                       -?> (insertPosition Above Newer <+> doF W.focusDown <+> doFullFloat)
+  , isDialog                           -?> insertPosition Above Newer
+  , className =? "Firefox"             -?> (liftX (addWorkspace "www") >> doShift "www" <+> insertPosition Below Newer)
+  , className =? "Gvim"                -?> (liftX (addWorkspace "code") >> doShift "code" <+> insertPosition Below Newer)
+  , className =? "URxvt"               -?> (liftX (addWorkspace "sys") >> doShift "sys" <+> insertPosition Below Newer)
+  , className =? "Deluge"              -?> (liftX (addWorkspace "torrent") >> doShift "sys" <+> insertPosition Below Newer)
+  , return True                        -?> insertPosition Below Newer
   ]
 
 main = do
@@ -79,8 +81,8 @@ main = do
     , keys            = \c -> keyBindings c `M.union` keys defaultConfig c
 
     , layoutHook      = avoidStruts $ smartBorders $ layouts
-    , manageHook      = manager <+> insertPosition Below Newer <+> manageDocks
-    , handleEventHook = handleEventHook defaultConfig <+> fullscreenEventHook <+> docksEventHook
+    , manageHook      = manager <+> manageDocks
+    , handleEventHook = handleEventHook defaultConfig <+> docksEventHook
     , logHook         = dbusLogWithPP client pp
     }
   where
