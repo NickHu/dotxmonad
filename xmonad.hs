@@ -11,6 +11,7 @@ import XMonad.Hooks.ManageDocks
 import XMonad.Hooks.ManageHelpers
 import XMonad.Hooks.EwmhDesktops
 import XMonad.Hooks.InsertPosition
+import XMonad.Hooks.UrgencyHook
 
 import XMonad.Layout.NoBorders
 import XMonad.Layout.HintedTile
@@ -65,7 +66,7 @@ main = do
   , ppLayout = taffybarColor solarizedViolet ""
   , ppSep = " <span foreground='" ++ solarizedCyan ++ "'>|</span> "
     }
-  xmonad $ ewmh defaultConfig
+  xmonad . ewmh $ withUrgencyHookC (BorderUrgencyHook solarizedOrange) urgencyConfig { suppressWhen = Focused, remindWhen = Dont } $ defaultConfig
     { terminal        = "urxvtc"
     , modMask         = mod4Mask
     , workspaces      = ["sys", "www"]
