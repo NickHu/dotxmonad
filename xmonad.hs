@@ -5,6 +5,7 @@ import XMonad.Actions.CopyWindow
 import XMonad.Actions.PhysicalScreens
 
 import XMonad.Prompt
+import XMonad.Prompt.RunOrRaise
 
 import XMonad.Hooks.DynamicLog
 import XMonad.Hooks.ManageDocks
@@ -85,8 +86,11 @@ main = do
   where
     keyBindings (XConfig {modMask = modm}) = M.fromList $
       [ 
+      -- Run or raise
+        ((modm, xK_p                    ), runOrRaisePrompt customXPConfig)
+
       -- Workspaces
-        ((modm .|. shiftMask, xK_BackSpace), removeWorkspace)
+      , ((modm .|. shiftMask, xK_BackSpace), removeWorkspace)
       , ((modm .|. shiftMask, xK_v      ), selectWorkspace customXPConfig)
       , ((modm, xK_i                    ), withWorkspace customXPConfig (windows . W.shift))
       , ((modm .|. shiftMask, xK_i      ), withWorkspace customXPConfig (windows . copy))
