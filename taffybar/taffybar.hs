@@ -19,8 +19,8 @@ main = do
       net = netMonitorNew 1 "eth0"
       weather = weatherNew weatherCfg 10
   defaultTaffybar defaultTaffybarConfig { 
-                                          monitorNumber = 1
-                                        , barHeight = 16
-                                        , startWidgets = [ log ]
-                                        , endWidgets = [ clock, weather, tray, net, nowPlaying, notifications ]
-                                        }
+    monitorNumber = 1
+  , barHeight = 16
+  , startWidgets = [ log ]
+  , endWidgets = [ clock, weather, tray, net, nowPlaying, notifications ]
+  }
