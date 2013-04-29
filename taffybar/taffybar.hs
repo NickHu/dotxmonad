@@ -16,7 +16,7 @@ main = do
       tray = systrayNew
       nowPlaying = mpris2New
       notifications = notifyAreaNew defaultNotificationConfig
-      net = netMonitorNew 1 "eth0"
+      net = netMonitorNew 1 "eno1"
       weather = weatherNew weatherCfg 10
   defaultTaffybar defaultTaffybarConfig { 
     monitorNumber = 1
