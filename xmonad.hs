@@ -10,10 +10,12 @@ import XMonad.Prompt.RunOrRaise
 import XMonad.Hooks.DynamicLog
 import XMonad.Hooks.ManageDocks
 import XMonad.Hooks.ManageHelpers
-import XMonad.Hooks.EwmhDesktops
+import XMonad.Hooks.EwmhDesktops hiding (fullscreenEventHook)
 import XMonad.Hooks.InsertPosition
 import XMonad.Hooks.UrgencyHook
 
+import XMonad.Layout.PerWorkspace
+import XMonad.Layout.Fullscreen
 import XMonad.Layout.NoBorders
 import XMonad.Layout.HintedTile
 
@@ -47,8 +49,10 @@ customXPConfig = defaultXPConfig
 
 manager = composeOne
   [
-    isFullscreen                       -?> (insertPosition Above Newer <+> doF W.focusDown <+> doFullFloat)
+    --isFullscreen                       -?> (insertPosition Above Newer <+> doF W.focusDown <+> doFullFloat)
+    isFullscreen                       -?> (insertPosition Above Newer <+> doFullFloat)
   , isDialog                           -?> insertPosition Above Newer
+  , className =? "MPlayer"             -?> (liftX (addWorkspace "mplayer") >> doShift "mplayer")
   , className =? "Firefox"             -?> (liftX (addWorkspace "www") >> doShift "www" <+> insertPosition Below Newer)
   , className =? "Gvim"                -?> (liftX (addWorkspace "code") >> doShift "code" <+> insertPosition Below Newer)
   , className =? "URxvt"               -?> (liftX (addWorkspace "sys") >> doShift "sys" <+> insertPosition Below Newer)
@@ -82,9 +86,9 @@ main = do
 
     , keys            = \c -> keyBindings c `M.union` keys defaultConfig c
 
-    , layoutHook      = avoidStruts $ smartBorders $ layouts
-    , manageHook      = manager <+> manageDocks
-    , handleEventHook = handleEventHook defaultConfig <+> docksEventHook
+    , layoutHook      = onWorkspace "mplayer" (noBorders $ fullscreenFull Full) $ avoidStruts $ smartBorders $ layouts
+    , manageHook      = manager <+> manageDocks <+> fullscreenManageHook
+    , handleEventHook = handleEventHook defaultConfig <+> docksEventHook <+> fullscreenEventHook
     , logHook         = dbusLogWithPP client pp
     }
   where
