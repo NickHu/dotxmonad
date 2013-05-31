@@ -6,6 +6,7 @@ import System.Taffybar.MPRIS2
 import System.Taffybar.FreedesktopNotifications
 import System.Taffybar.Weather
 import System.Taffybar.NetMonitor
+import System.Taffybar.Battery
 
 import Solarized
 
@@ -16,11 +17,12 @@ main = do
       tray = systrayNew
       nowPlaying = mpris2New
       notifications = notifyAreaNew defaultNotificationConfig
-      net = netMonitorNew 1 "eno1"
+      net = netMonitorNew 1 "wlp3s0"
       weather = weatherNew weatherCfg 10
+      battery = textBatteryNew ("<span fgcolor='" ++ solarizedOrange ++ "'>%d</span><span fgcolor='" ++ solarizedBlue ++ "'>%%</span>") 5
   defaultTaffybar defaultTaffybarConfig { 
-    monitorNumber = 1
+    monitorNumber = 0
   , barHeight = 16
   , startWidgets = [ log ]
-  , endWidgets = [ clock, weather, tray, net, nowPlaying, notifications ]
+  , endWidgets = [ clock, battery, weather, tray, net, nowPlaying, notifications ]
   }

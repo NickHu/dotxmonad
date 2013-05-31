@@ -52,7 +52,8 @@ manager = composeOne
   , className =? "Firefox"             -?> (liftX (addWorkspace "www") >> doShift "www" <+> insertPosition Below Newer)
   , className =? "Gvim"                -?> (liftX (addWorkspace "code") >> doShift "code" <+> insertPosition Below Newer)
   , className =? "URxvt"               -?> (liftX (addWorkspace "sys") >> doShift "sys" <+> insertPosition Below Newer)
-  , className =? "Deluge"              -?> (liftX (addWorkspace "torrent") >> doShift "sys" <+> insertPosition Below Newer)
+  , className =? "Deluge"              -?> (liftX (addWorkspace "torrent") >> doShift "torrent" <+> insertPosition Below Newer)
+  , className =? "Dwarf_Fortress"      -?> (liftX (addWorkspace "df") >> doShift "df" <+> insertPosition Below Newer)
   , return True                        -?> insertPosition Below Newer
   ]
 
@@ -104,6 +105,15 @@ main = do
       , ((mod1Mask          , xK_period), spawn "dbus-send --type=method_call --dest=org.mpris.MediaPlayer2.mpd /org/mpris/MediaPlayer2 org.mpris.MediaPlayer2.Player.Next")
       , ((mod1Mask          , xK_p     ), spawn "dbus-send --type=method_call --dest=org.mpris.MediaPlayer2.mpd /org/mpris/MediaPlayer2 org.mpris.MediaPlayer2.Player.PlayPause")
       , ((mod1Mask          , xK_r     ), spawn "mpc random")
+
+      -- xscreensaver
+      , ((0                 , 0x1008FF2D), spawn "xscreensaver-command -lock")
+
+      -- PulseAudio volume control
+      , ((0                 , 0x1008FF12), spawn "pactl set-sink-mute alsa_output.pci-0000_00_1b.0.analog-stereo toggle")
+      , ((0                 , 0x1008FFB2), spawn "pactl set-source-mute alsa_input.pci-0000_00_1b.0.analog-stereo toggle")
+      , ((0                 , 0x1008FF13), spawn "pactl set-sink-volume alsa_output.pci-0000_00_1b.0.analog-stereo $(printf '0x%x' $(( $(pacmd dump|grep 'set-sink-volume alsa_output.pci-0000_00_1b.0.analog-stereo'|cut -f3 -d' ') + 0xf00)) )")
+      , ((0                 , 0x1008FF11), spawn "pactl set-sink-volume alsa_output.pci-0000_00_1b.0.analog-stereo $(printf '0x%x' $(( $(pacmd dump|grep 'set-sink-volume alsa_output.pci-0000_00_1b.0.analog-stereo'|cut -f3 -d' ') - 0xf00)) )")
       ]
  
       -- mod-[1..9]       %! Switch to workspace N
