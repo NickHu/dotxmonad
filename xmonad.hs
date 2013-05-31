@@ -54,6 +54,7 @@ manager = composeOne
   , className =? "URxvt"               -?> (liftX (addWorkspace "sys") >> doShift "sys" <+> insertPosition Below Newer)
   , className =? "Deluge"              -?> (liftX (addWorkspace "torrent") >> doShift "torrent" <+> insertPosition Below Newer)
   , className =? "Dwarf_Fortress"      -?> (liftX (addWorkspace "df") >> doShift "df" <+> insertPosition Below Newer)
+  , className =? "Steam"               -?> (liftX (addWorkspace "steam") >> doShift "steam" <+> insertPosition Below Newer)
   , return True                        -?> insertPosition Below Newer
   ]
 
