@@ -13,14 +13,17 @@ import XMonad.Hooks.ManageHelpers
 import XMonad.Hooks.EwmhDesktops hiding (fullscreenEventHook)
 import XMonad.Hooks.InsertPosition
 import XMonad.Hooks.UrgencyHook
+import XMonad.Hooks.SetWMName
+
+import DBus.Client
+import System.Taffybar.XMonadLog
+import System.Taffybar.Pager (colorize)
 
 import XMonad.Layout.PerWorkspace
 import XMonad.Layout.Fullscreen
 import XMonad.Layout.NoBorders
 import XMonad.Layout.HintedTile
-
-import DBus.Client
-import System.Taffybar.XMonadLog
+import XMonad.Layout.SimplestFloat
 
 import qualified XMonad.StackSet as W
 import qualified Data.Map as M
@@ -52,6 +55,7 @@ manager = composeOne
     --isFullscreen                       -?> (insertPosition Above Newer <+> doF W.focusDown <+> doFullFloat)
     isFullscreen                       -?> (insertPosition Above Newer <+> doFullFloat)
   , isDialog                           -?> insertPosition Above Newer
+  , className =? "Tk"                  -?> (doFloat)
   , className =? "MPlayer"             -?> (liftX (addWorkspace "mplayer") >> doShift "mplayer")
   , className =? "Firefox"             -?> (liftX (addWorkspace "www") >> doShift "www" <+> insertPosition Below Newer)
   , className =? "Gvim"                -?> (liftX (addWorkspace "code") >> doShift "code" <+> insertPosition Below Newer)
@@ -71,14 +75,15 @@ main = do
   , ppHidden = taffybarColor solarizedBase01 ""
   , ppHiddenNoWindows = taffybarColor solarizedBase00 ""
   , ppUrgent = taffybarColor solarizedOrange "" . wrap "!" "!"
-  , ppTitle = taffybarColor solarizedBlue ""
+  , ppTitle = taffybarColor solarizedBlue "" . shorten 128
   , ppLayout = taffybarColor solarizedViolet ""
-  , ppSep = " <span foreground='" ++ solarizedCyan ++ "'>|</span> "
+  , ppSep = colorize solarizedCyan "" " | "
   }
   xmonad . ewmh $ withUrgencyHookC (BorderUrgencyHook solarizedOrange) urgencyConfig { suppressWhen = Focused, remindWhen = Dont } $ defaultConfig
     {
       terminal        = "urxvtc"
     , modMask         = mod4Mask
+    , startupHook     = setWMName "LG3D"
     , workspaces      = ["sys", "www"]
     , borderWidth     = 1
     , focusedBorderColor     = solarizedRed
@@ -86,7 +91,7 @@ main = do
 
     , keys            = \c -> keyBindings c `M.union` keys defaultConfig c
 
-    , layoutHook      = onWorkspace "mplayer" (noBorders $ fullscreenFull Full) $ avoidStruts $ smartBorders $ layouts
+    , layoutHook      = onWorkspace "mplayer" (noBorders $ fullscreenFull Full) $ onWorkspace "float" (simplestFloat) $ avoidStruts $ smartBorders $ layouts
     , manageHook      = manager <+> manageDocks <+> fullscreenManageHook
     , handleEventHook = handleEventHook defaultConfig <+> docksEventHook <+> fullscreenEventHook
     , logHook         = dbusLogWithPP client pp
@@ -119,6 +124,16 @@ main = do
       , ((0                 , 0x1008FFB2), spawn "pactl set-source-mute alsa_input.pci-0000_00_1b.0.analog-stereo toggle")
       , ((0                 , 0x1008FF13), spawn "pactl set-sink-volume alsa_output.pci-0000_00_1b.0.analog-stereo $(printf '0x%x' $(( $(pacmd dump|grep 'set-sink-volume alsa_output.pci-0000_00_1b.0.analog-stereo'|cut -f3 -d' ') + 0xf00)) )")
       , ((0                 , 0x1008FF11), spawn "pactl set-sink-volume alsa_output.pci-0000_00_1b.0.analog-stereo $(printf '0x%x' $(( $(pacmd dump|grep 'set-sink-volume alsa_output.pci-0000_00_1b.0.analog-stereo'|cut -f3 -d' ') - 0xf00)) )")
+
+      -- Toggle Synaptics Touchpad
+      , ((0                 , 0x1008FF41), spawn "synclient TouchpadOff=$(synclient -l | grep -c 'TouchpadOff.*=.*0')")
+
+      -- Print & Puush
+      , ((0                 , xK_Print  ), spawn "scrot /tmp/screenshot.png")
+      , ((mod1Mask          , xK_Print  ), spawn "sleep 0.5 && scrot -s /tmp/screenshot.png")
+      , ((shiftMask         , xK_Print  ), spawn "scrot /tmp/screenshot.png && puush /tmp/screenshot.png | tail -n 1 | xclip -sel c && xkbbell")
+      , ((mod1Mask .|. shiftMask, xK_Print  ), spawn "sleep 0.5 && scrot -s /tmp/screenshot.png && puush /tmp/screenshot.png | tail -n 1 | xclip -sel c && xkbbell")
+
       ]
  
       -- mod-[1..9]       %! Switch to workspace N
