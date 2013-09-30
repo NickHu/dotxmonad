@@ -3,6 +3,7 @@ import XMonad hiding (Tall)
 import XMonad.Actions.DynamicWorkspaces
 import XMonad.Actions.CopyWindow
 import XMonad.Actions.PhysicalScreens
+import XMonad.Actions.SpawnOn
 
 import XMonad.Prompt
 import XMonad.Prompt.RunOrRaise
@@ -52,18 +53,23 @@ customXPConfig = defaultXPConfig
 
 manager = composeOne
   [
-    --isFullscreen                       -?> (insertPosition Above Newer <+> doF W.focusDown <+> doFullFloat)
-    isFullscreen                       -?> (insertPosition Above Newer <+> doFullFloat)
-  , isDialog                           -?> insertPosition Above Newer
-  , className =? "Tk"                  -?> (doFloat)
-  , className =? "MPlayer"             -?> (liftX (addWorkspace "mplayer") >> doShift "mplayer")
-  , className =? "Firefox"             -?> (liftX (addWorkspace "www") >> doShift "www" <+> insertPosition Below Newer)
-  , className =? "Gvim"                -?> (liftX (addWorkspace "code") >> doShift "code" <+> insertPosition Below Newer)
-  , className =? "URxvt"               -?> (liftX (addWorkspace "sys") >> doShift "sys" <+> insertPosition Below Newer)
-  , className =? "Deluge"              -?> (liftX (addWorkspace "torrent") >> doShift "torrent" <+> insertPosition Below Newer)
-  , className =? "Dwarf_Fortress"      -?> (liftX (addWorkspace "df") >> doShift "df" <+> insertPosition Below Newer)
-  , className =? "Steam"               -?> (liftX (addWorkspace "steam") >> doShift "steam" <+> insertPosition Below Newer)
-  , return True                        -?> insertPosition Below Newer
+    --isFullscreen                    -?> (insertPosition Above Newer <+> doF W.focusDown <+> doFullFloat)
+    isFullscreen                      -?> (insertPosition Above Newer <+> doFullFloat)
+  , isDialog                          -?> insertPosition Above Newer
+  , className =? "Tk"                 -?> (doFloat)
+  , className =? "MPlayer"            -?> (liftX (addWorkspace "mplayer") >> doShift "mplayer")
+  , className =? "mplayer2"           -?> (liftX (addWorkspace "mplayer") >> doShift "mplayer")
+  , className =? "mpv"                -?> (liftX (addWorkspace "mplayer") >> doShift "mplayer")
+  , className =? "Firefox"            -?> (liftX (addWorkspace "www") >> doShift "www" <+> insertPosition Below Newer)
+  , className =? "Gvim"               -?> (liftX (addWorkspace "code") >> doShift "code" <+> insertPosition Below Newer)
+  , className =? "URxvt"              -?> (liftX (addWorkspace "sys") >> doShift "sys" <+> insertPosition Below Newer)
+  , className =? "Deluge"             -?> (liftX (addWorkspace "torrent") >> doShift "torrent" <+> insertPosition Below Newer)
+  , className =? "Dwarf_Fortress"     -?> (liftX (addWorkspace "df") >> doShift "df" <+> insertPosition Below Newer)
+  , className =? "Steam"              -?> (liftX (addWorkspace "steam") >> doShift "steam" <+> insertPosition Below Newer)
+  , className =? "GuitarPro"          -?> (liftX (addWorkspace "guitarpro") >> doShift "guitarpro" <+> insertPosition Below Newer)
+  , className =? "Gimp"               -?> (liftX (addWorkspace "gimp") >> doShift "gimp" <+> insertPosition Below Newer)
+  , className =? "libreoffice-writer" -?> (liftX (addWorkspace "office") >> doShift "office" <+> insertPosition Below Newer)
+  , return True                       -?> insertPosition Below Newer
   ]
 
 main = do
@@ -83,7 +89,7 @@ main = do
     {
       terminal        = "urxvtc"
     , modMask         = mod4Mask
-    , startupHook     = setWMName "LG3D"
+    , startupHook     = spawn "killall taffybar-linux-x86_64" <+> ewmhDesktopsStartup <+> setWMName "LG3D"
     , workspaces      = ["sys", "www"]
     , borderWidth     = 1
     , focusedBorderColor     = solarizedRed
@@ -92,7 +98,7 @@ main = do
     , keys            = \c -> keyBindings c `M.union` keys defaultConfig c
 
     , layoutHook      = onWorkspace "mplayer" (noBorders $ fullscreenFull Full) $ onWorkspace "float" (simplestFloat) $ avoidStruts $ smartBorders $ layouts
-    , manageHook      = manager <+> manageDocks <+> fullscreenManageHook
+    , manageHook      = manageSpawn <+> manager <+> manageDocks <+> fullscreenManageHook
     , handleEventHook = handleEventHook defaultConfig <+> docksEventHook <+> fullscreenEventHook
     , logHook         = dbusLogWithPP client pp
     }
@@ -101,6 +107,7 @@ main = do
       [ 
       -- Run or raise
         ((modm, xK_p                    ), runOrRaisePrompt customXPConfig)
+      , ((modm .|. shiftMask, xK_p      ), shellPromptHere customXPConfig)
 
       -- Workspaces
       , ((modm .|. shiftMask, xK_BackSpace), removeWorkspace)
@@ -120,10 +127,16 @@ main = do
       , ((0                 , 0x1008FF2D), spawn "xscreensaver-command -lock")
 
       -- PulseAudio volume control
-      , ((0                 , 0x1008FF12), spawn "pactl set-sink-mute alsa_output.pci-0000_00_1b.0.analog-stereo toggle")
-      , ((0                 , 0x1008FFB2), spawn "pactl set-source-mute alsa_input.pci-0000_00_1b.0.analog-stereo toggle")
-      , ((0                 , 0x1008FF13), spawn "pactl set-sink-volume alsa_output.pci-0000_00_1b.0.analog-stereo $(printf '0x%x' $(( $(pacmd dump|grep 'set-sink-volume alsa_output.pci-0000_00_1b.0.analog-stereo'|cut -f3 -d' ') + 0xf00)) )")
-      , ((0                 , 0x1008FF11), spawn "pactl set-sink-volume alsa_output.pci-0000_00_1b.0.analog-stereo $(printf '0x%x' $(( $(pacmd dump|grep 'set-sink-volume alsa_output.pci-0000_00_1b.0.analog-stereo'|cut -f3 -d' ') - 0xf00)) )")
+      --, ((0                 , 0x1008FF12), spawn "pactl set-sink-mute alsa_output.pci-0000_00_1b.0.analog-stereo toggle")
+      --, ((0                 , 0x1008FFB2), spawn "pactl set-source-mute alsa_input.pci-0000_00_1b.0.analog-stereo toggle")
+      --, ((0                 , 0x1008FF13), spawn "pactl set-sink-volume alsa_output.pci-0000_00_1b.0.analog-stereo $(printf '0x%x' $(( $(pacmd dump|grep 'set-sink-volume alsa_output.pci-0000_00_1b.0.analog-stereo'|cut -f3 -d' ') + 0xf00)) )")
+      --, ((0                 , 0x1008FF11), spawn "pactl set-sink-volume alsa_output.pci-0000_00_1b.0.analog-stereo $(printf '0x%x' $(( $(pacmd dump|grep 'set-sink-volume alsa_output.pci-0000_00_1b.0.analog-stereo'|cut -f3 -d' ') - 0xf00)) )")
+
+      -- ALSA volume control
+      , ((0                 , 0x1008FF12), spawn "amixer -q set Master toggle")
+      , ((0                 , 0x1008FFB2), spawn "amixer -q set Capture toggle")
+      , ((0                 , 0x1008FF13), spawn "amixer -q set Master 5+")
+      , ((0                 , 0x1008FF11), spawn "amixer -q set Master 5-")
 
       -- Toggle Synaptics Touchpad
       , ((0                 , 0x1008FF41), spawn "synclient TouchpadOff=$(synclient -l | grep -c 'TouchpadOff.*=.*0')")
