@@ -36,7 +36,7 @@ layouts = hintedTile Tall ||| hintedTile Wide ||| Full
   where
     hintedTile   = HintedTile nmaster delta ratio TopLeft
     nmaster = 1
-    ratio   = 1/2
+    ratio   = 1 - 100/266
     delta   = 3/100
 
 customXPConfig = defaultXPConfig                                    
