@@ -33,7 +33,7 @@ main = do
       notifications = notifyAreaNew defaultNotificationConfig
       net = netMonitorNew 1 "wlp3s0"
       weather = weatherNew weatherCfg 10
-      battery = textBatteryNew (colorize solarizedRed "" "%d" ++ colorize solarizedBlue "" "%%") 5
+      battery = textBatteryNew (colorize solarizedRed "" "$percentage$" ++ colorize solarizedBlue "" "%" ++ colorize solarizedCyan "" " $time$") 5
   defaultTaffybar defaultTaffybarConfig { 
     monitorNumber = 0
   , barHeight = 16
