@@ -147,6 +147,9 @@ main = do
       , ((shiftMask         , xK_Print  ), spawn "scrot /tmp/screenshot.png && puush /tmp/screenshot.png | tail -n 1 | xclip -sel c && xkbbell")
       , ((mod1Mask .|. shiftMask, xK_Print  ), spawn "sleep 0.5 && scrot -s /tmp/screenshot.png && puush /tmp/screenshot.png | tail -n 1 | xclip -sel c && xkbbell")
 
+      -- Turn off display
+      , ((0                  , 0x1008FF59), spawn "xset dpms force off")
+
       ]
  
       -- mod-[1..9]       %! Switch to workspace N
