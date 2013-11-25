@@ -2,9 +2,9 @@ gtk_color_scheme = "base03:#002b36;base02:#073642;base01:#586e75;base00:#657b83;
 
 style "default" {
   font_name = "Terminus 8"
-  bg[NORMAL] = @base02
-  fg[NORMAL] = @yellow
-  text[NORMAL] = @blue
+  bg[NORMAL] = @base03
+  fg[NORMAL] = @base0
+  text[NORMAL] = @base0
 }
 
 style "notification-button" = "default" {

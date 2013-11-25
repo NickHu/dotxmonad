@@ -42,9 +42,9 @@ layouts = hintedTile Tall ||| hintedTile Wide ||| Full
 customXPConfig = defaultXPConfig                                    
   {
     font  = "-*-terminus-*-*-*-*-12-*-*-*-*-*-*-u" 
-  , fgColor = solarizedBlue
-  , bgColor = solarizedBase02
-  , fgHLight    = solarizedOrange
+  , fgColor = solarizedBase0
+  , bgColor = solarizedBase03
+  , fgHLight    = solarizedBase1
   , bgHLight    = solarizedBase02
   , promptBorderWidth = 0
   , position = Top
@@ -66,6 +66,7 @@ manager = composeOne
   , className =? "Deluge"             -?> (liftX (addWorkspace "torrent") >> doShift "torrent" <+> insertPosition Below Newer)
   , className =? "Dwarf_Fortress"     -?> (liftX (addWorkspace "df") >> doShift "df" <+> insertPosition Below Newer)
   , className =? "Steam"              -?> (liftX (addWorkspace "steam") >> doShift "steam" <+> insertPosition Below Newer)
+  , appName =? "Updating Steam..."    -?> (liftX (addWorkspace "steam") >> doShift "steam" <+> insertPosition Below Newer)
   , className =? "GuitarPro"          -?> (liftX (addWorkspace "guitarpro") >> doShift "guitarpro" <+> insertPosition Below Newer)
   , className =? "Gimp"               -?> (liftX (addWorkspace "gimp") >> doShift "gimp" <+> insertPosition Below Newer)
   , className =? "libreoffice-writer" -?> (liftX (addWorkspace "office") >> doShift "office" <+> insertPosition Below Newer)
@@ -73,17 +74,17 @@ manager = composeOne
   ]
 
 main = do
-  bar <- spawn "taffybar"
+  -- bar <- spawn "taffybar"
   client <- connectSession
   let pp = taffybarPP {
-    ppCurrent = taffybarColor solarizedMagenta ""
-  , ppVisible = taffybarColor solarizedGreen ""
+    ppCurrent = taffybarColor solarizedBase1 ""
+  , ppVisible = taffybarColor solarizedBase0 ""
   , ppHidden = taffybarColor solarizedBase01 ""
-  , ppHiddenNoWindows = taffybarColor solarizedBase00 ""
+  , ppHiddenNoWindows = taffybarColor solarizedBase02 ""
   , ppUrgent = taffybarColor solarizedOrange "" . wrap "!" "!"
-  , ppTitle = taffybarColor solarizedBlue "" . shorten 128
-  , ppLayout = taffybarColor solarizedViolet ""
-  , ppSep = colorize solarizedCyan "" " | "
+  , ppTitle = taffybarColor solarizedBase0 "" . shorten 128
+  , ppLayout = taffybarColor solarizedBase0 ""
+  , ppSep = colorize solarizedBase01 "" " | "
   }
   xmonad . ewmh $ withUrgencyHookC (BorderUrgencyHook solarizedOrange) urgencyConfig { suppressWhen = Focused, remindWhen = Dont } $ defaultConfig
     {
@@ -92,8 +93,8 @@ main = do
     , startupHook     = spawn "killall taffybar-linux-x86_64" <+> ewmhDesktopsStartup <+> setWMName "LG3D"
     , workspaces      = ["sys", "www"]
     , borderWidth     = 1
-    , focusedBorderColor     = solarizedRed
-    , normalBorderColor      = solarizedBase01
+    , focusedBorderColor     = solarizedBase01
+    , normalBorderColor      = solarizedBase02
 
     , keys            = \c -> keyBindings c `M.union` keys defaultConfig c
 
